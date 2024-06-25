@@ -92,6 +92,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
+			m.err = nil
 			return m, runMysql(m.Cmd, m.Mysql[m.cursor])
 		case "ctrl+c", "q":
 			return m, tea.Quit
@@ -110,17 +111,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		if msg.err != nil {
 			m.err = msg.err
-			return m, tea.Quit
 		}
 	}
 	return m, nil
 }
 
 func (m model) View() string {
+	s := ""
 	if m.err != nil {
-		return "Error: " + m.err.Error() + "\n"
+		s += "Error: " + m.err.Error() + "\n"
 	}
-	s := "select database\n"
+	s += "select database\n"
 
 	// Iterate over our choices
 	for i, conf := range m.Mysql {
